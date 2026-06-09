@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Soluciones & Laboratorio · Reporte de Servicio</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    :root{
+      --primary:#12344d; --secondary:#1e88a8; --accent:#27a6b7; --bg:#f4f7fb; --card:#fff;
+      --text:#1f2937; --muted:#667085; --line:#d7dee8; --soft:#e8f6f8; --ok:#0f8b5f; --danger:#b42318;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--text)}
+    header{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;padding:18px 22px;display:flex;justify-content:space-between;gap:16px;align-items:center;position:sticky;top:0;z-index:10;box-shadow:0 4px 18px rgba(0,0,0,.18)}
+    header h1{margin:0;font-size:22px} header small{display:block;margin-top:4px;opacity:.92}
+    .pill{border:1px solid rgba(255,255,255,.32);background:rgba(255,255,255,.14);border-radius:999px;padding:9px 14px;font-size:13px}
+    .wrap{max-width:1320px;margin:22px auto;padding:0 16px 40px;display:grid;grid-template-columns:minmax(0,1fr)330px;gap:18px}
+    main{min-width:0}.side{position:sticky;top:90px;align-self:start}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 26px rgba(15,23,42,.06);margin-bottom:16px;overflow:hidden}
+    .card h2{margin:0;padding:14px 18px;font-size:16px;color:var(--primary);background:linear-gradient(90deg,#eef9fb,#fff);border-bottom:1px solid var(--line)}
+    .body{padding:18px}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+    .c12{grid-column:span 12}.c8{grid-column:span 8}.c6{grid-column:span 6}.c4{grid-column:span 4}.c3{grid-column:span 3}
+    label{display:block;margin-bottom:6px;font-size:12px;font-weight:bold;color:#334155}
+    input,select,textarea{width:100%;border:1px solid #cfd8e3;border-radius:10px;padding:10px 11px;font-size:14px;background:#fff;color:var(--text);outline:none}
+    textarea{min-height:92px;resize:vertical;line-height:1.38}
+    input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(39,166,183,.13)}
+    input[readonly]{background:#f8fafc;font-weight:bold}
+    .brand{display:flex;align-items:center;gap:18px;border:1px solid var(--line);border-radius:18px;padding:18px;background:#fff}
+    .brand img{width:min(100%,340px);max-height:135px;object-fit:contain}
+    .brand .name{font-size:25px;font-weight:800;color:var(--primary)}.brand .tag{font-size:13px;color:var(--muted);margin-top:6px}
+    .btn{width:100%;border:0;border-radius:11px;padding:11px 13px;margin-bottom:10px;cursor:pointer;color:#fff;background:var(--primary);font-size:14px;font-weight:bold}
+    .btn:hover{opacity:.96}.btn.ok{background:var(--ok)}.btn.accent{background:var(--accent)}.btn.danger{background:var(--danger)}.btn.secondary{background:#eef2f7;color:#16324f;border:1px solid #d9e2ed}.btn.small{width:auto;padding:8px 10px;margin:0;font-size:12px}
+    table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}th{background:#eef7fa;color:var(--primary)}td input{border:0;padding:6px;border-radius:6px}
+    .signatureBox{border:1px dashed #9fb3c8;border-radius:14px;background:#fbfdff;padding:10px}
+    canvas.signature{width:100%;height:180px;border-radius:10px;background:#fff;border:1px solid #d7dee8;display:block;touch-action:none;cursor:crosshair}
+    .qrBox{display:none;justify-content:center;align-items:center;min-height:190px;border:1px solid var(--line);border-radius:14px;background:#fff;padding:12px;margin-top:10px}
+    .qrBox img,.qrBox canvas{max-width:170px;max-height:170px}
+    .photoGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:12px}
+    .photo{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fbfdff}.photo img{width:100%;height:120px;object-fit:cover;border-radius:9px;border:1px solid #e5eaf0}
+    .list{max-height:260px;overflow-y:auto;border:1px solid var(--line);border-radius:12px;background:#fff}.row{padding:10px;border-bottom:1px solid var(--line);cursor:pointer}.row:hover{background:#f2f8fa}.row:last-child{border-bottom:0}.row strong{display:block;font-size:13px}.row span{color:var(--muted);font-size:12px}
+    .toast{display:none;position:fixed;right:20px;bottom:20px;z-index:100;background:#0f172a;color:#fff;padding:12px 15px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.22);max-width:360px}
+    @media(max-width:980px){.wrap{grid-template-columns:1fr}.side{position:static}.c3,.c4,.c6,.c8{grid-column:span 12}header{flex-direction:column;align-items:flex-start}.brand{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+<header>
+  <div><h1>Soluciones &amp; Laboratorio · Reportes de Servicio</h1><small>VERSIÓN V9 FUNCIONAL · PDF · Guardado · QR de la misma hoja llena</small></div>
+  <div class="pill" id="status">Reporte nuevo</div>
+</header>
+
+<div class="wrap">
+  <main>
+    <section class="card">
+      <h2>1. Empresa emisora</h2>
+      <div class="body grid">
+        <div class="c12"><div class="brand"><img id="logoPreview" src="logo_soluciones_laboratorio.jpg" alt="Logo"><div><div class="name">SOLUCIONES &amp; LABORATORIO</div><div class="tag">INGENIERÍA AVANZADA Y ANÁLISIS TÉCNICO</div></div></div></div>
+        <div class="c6"><label>Nombre comercial</label><input id="companyName" value="SOLUCIONES & LABORATORIO" readonly></div>
+        <div class="c6"><label>Especialidad</label><input id="companyTagline" value="INGENIERÍA AVANZADA Y ANÁLISIS TÉCNICO" readonly></div>
+        <div class="c4"><label>Teléfono</label><input id="companyPhone"></div>
+        <div class="c4"><label>Correo</label><input id="companyEmail"></div>
+        <div class="c4"><label>URL pública del sistema</label><input id="publicUrl" placeholder="https://usuario.github.io/repositorio/"></div>
+        <div class="c8"><label>Domicilio</label><input id="companyAddress"></div>
+        <div class="c4"><label>Actualizar logotipo</label><input id="companyLogo" type="file" accept="image/*"></div>
+      </div>
+    </section>
+
+    <section class="card"><h2>2. Datos generales</h2><div class="body grid">
+      <div class="c3"><label>Folio automático</label><input id="folio" readonly></div>
+      <div class="c3"><label>Fecha del reporte</label><input id="reportDate" type="date"></div>
+      <div class="c3"><label>Preparado por</label><input id="preparedBy"></div>
+      <div class="c3"><label>Estado final</label><select id="finalStatus"><option>Equipo operativo</option><option>Equipo operativo con observaciones</option><option>Equipo no operativo</option><option>Pendiente por refacción</option><option>Pendiente por autorización</option></select></div>
+    </div></section>
+
+    <section class="card"><h2>3. Datos del cliente</h2><div class="body grid">
+      <div class="c6"><label>Nombre del cliente</label><input id="clientName"></div>
+      <div class="c6"><label>Responsable sanitario</label><input id="clientReceiver"></div>
+      <div class="c8"><label>Domicilio del servicio</label><input id="clientAddress"></div>
+      <div class="c4"><label>Lugar del servicio</label><select id="servicePlace"><option>Instalaciones del cliente</option><option>Taller del proveedor</option><option>Remoto</option><option>Otro</option></select></div>
+      <div class="c4"><label>Teléfono</label><input id="clientPhone"></div>
+      <div class="c4"><label>Correo</label><input id="clientEmail"></div>
+      <div class="c4"><label>Ubicación / área</label><input id="clientLocation"></div>
+    </div></section>
+
+    <section class="card"><h2>4. Datos del equipo</h2><div class="body grid">
+      <div class="c4"><label>Instrumento / área</label><input id="instrument"></div>
+      <div class="c4"><label>Marca</label><input id="brand"></div>
+      <div class="c4"><label>Modelo</label><input id="model"></div>
+      <div class="c4"><label>Número de serie</label><input id="serial"></div>
+      <div class="c4"><label>Tipo de servicio</label><select id="serviceType"><option>Mantenimiento preventivo</option><option>Mantenimiento correctivo</option><option>Instalación</option><option>Diagnóstico</option><option>Capacitación</option><option>Validación</option><option>Otro</option></select></div>
+      <div class="c4"><label>Prioridad</label><select id="priority"><option>Normal</option><option>Alta</option><option>Crítica</option></select></div>
+    </div></section>
+
+    <section class="card"><h2>5. Datos técnicos del servicio</h2><div class="body grid">
+      <div class="c3"><label>Inicio del servicio</label><input id="startTime" type="datetime-local"></div>
+      <div class="c3"><label>Término del servicio</label><input id="endTime" type="datetime-local"></div>
+      <div class="c3"><label>Fecha próximo mantenimiento</label><input id="nextMaintenance" type="date"></div>
+      <div class="c3"><label>Puntuación / avance</label><input id="score" value="100%"></div>
+      <div class="c12"><label>Reporte de falla y/o motivo del servicio</label><textarea id="problemReport"></textarea></div>
+      <div class="c12"><label>Descripción del servicio realizado</label><textarea id="serviceDescription"></textarea></div>
+      <div class="c12"><label>Observaciones y recomendaciones</label><textarea id="observations"></textarea></div>
+    </div></section>
+
+    <section class="card"><h2>6. Refacciones y consumibles utilizados</h2><div class="body">
+      <table id="partsTable"><thead><tr><th>Descripción</th><th>Cantidad</th><th>Unidad</th><th>Observaciones</th><th>Acción</th></tr></thead><tbody></tbody></table><br>
+      <button class="btn secondary small" id="addPartBtn" type="button">+ Agregar refacción</button>
+    </div></section>
+
+    <section class="card"><h2>7. Evidencia fotográfica</h2><div class="body">
+      <input id="photoInput" type="file" accept="image/*" multiple><div class="photoGrid" id="photoGrid"></div>
+    </div></section>
+
+    <section class="card"><h2>8. Firmas de conformidad</h2><div class="body grid">
+      <div class="c6"><label>Firma del ingeniero de servicio</label><div class="signatureBox"><canvas class="signature" id="techSignature"></canvas><button class="btn secondary small" id="clearTech" type="button">Limpiar firma</button></div></div>
+      <div class="c6"><label>Firma de conformidad del responsable sanitario</label><div class="signatureBox"><canvas class="signature" id="clientSignature"></canvas><button class="btn secondary small" id="clearClient" type="button">Limpiar firma</button></div><br>
+        <button class="btn accent" id="generateQrBtn" type="button">Generar QR</button>
+        <div id="qrBox" class="qrBox"></div>
+      </div>
+    </div></section>
+  </main>
+
+  <aside class="side">
+    <section class="card"><h2>Acciones</h2><div class="body">
+      <button class="btn ok" id="saveBtn" type="button">Guardar reporte</button>
+      <button class="btn accent" id="pdfBtn" type="button">Generar PDF</button>
+      <button class="btn secondary" id="excelBtn" type="button">Exportar base de datos Excel</button>
+      <button class="btn secondary" id="newBtn" type="button">Nuevo reporte</button>
+      <button class="btn danger" id="deleteBtn" type="button">Eliminar reporte actual</button>
+    </div></section>
+    <section class="card"><h2>Reportes guardados</h2><div class="body"><div id="reportList" class="list"></div></div></section>
+  </aside>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+
+const STORAGE_KEY = 'service_reports_db_v9';
+const SETTINGS_KEY = 'service_report_settings_v9';
+const COMPANY = 'SOLUCIONES & LABORATORIO';
+const TAGLINE = 'INGENIERÍA AVANZADA Y ANÁLISIS TÉCNICO';
+let currentId = null;
+let photos = [];
+let logoData = '';
+let canvasesReady = false;
+
+const $ = (id) => document.getElementById(id);
+const ids = ['companyName','companyTagline','companyPhone','companyEmail','publicUrl','companyAddress','folio','reportDate','preparedBy','finalStatus','clientName','clientReceiver','clientAddress','servicePlace','clientPhone','clientEmail','clientLocation','instrument','brand','model','serial','serviceType','priority','startTime','endTime','nextMaintenance','score','problemReport','serviceDescription','observations'];
+
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.style.display='block'; setTimeout(()=>t.style.display='none',2500); }
+function pad(n){ return String(n).padStart(2,'0'); }
+function today(){ const d=new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+function folioNow(){ const d=new Date(); return `SL-${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`; }
+function ensureFolio(force=false){ if(force || !$('folio').value) $('folio').value = folioNow(); }
+function uid(){ return (crypto && crypto.randomUUID) ? crypto.randomUUID() : 'id-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2); }
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function safe(s){ return String(s||'').replace(/[\\/:*?"<>|]/g,'-').replace(/\s+/g,'_').slice(0,80); }
+function getReports(){ try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch{return[]} }
+function setReports(r){ localStorage.setItem(STORAGE_KEY, JSON.stringify(r)); }
+function getSettings(){ try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}')}catch{return{}} }
+function setSettings(){ localStorage.setItem(SETTINGS_KEY, JSON.stringify({companyPhone:$('companyPhone').value,companyEmail:$('companyEmail').value,companyAddress:$('companyAddress').value,publicUrl:$('publicUrl').value,logoData})); }
+
+async function imageFileToData(file, max=1200, quality=.78){
+  return new Promise((resolve,reject)=>{
+    const fr=new FileReader();
+    fr.onload=()=>{ const img=new Image(); img.onload=()=>{ let w=img.width,h=img.height; const sc=Math.min(1,max/Math.max(w,h)); w=Math.round(w*sc); h=Math.round(h*sc); const c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(img,0,0,w,h); resolve(c.toDataURL('image/jpeg',quality)); }; img.onerror=reject; img.src=fr.result; };
+    fr.onerror=reject; fr.readAsDataURL(file);
+  });
+}
+async function imageUrlToData(url){
+  try{ const res=await fetch(url); const blob=await res.blob(); return await new Promise((resolve,reject)=>{const r=new FileReader(); r.onload=()=>resolve(r.result); r.onerror=reject; r.readAsDataURL(blob);}); }catch{return '';}
+}
+
+function status(){ $('status').textContent = `${$('folio').value||'Sin folio'} · ${$('clientName').value||'Sin cliente'} · ${$('finalStatus').value||''}`; }
+
+function parts(){
+  return [...document.querySelectorAll('#partsTable tbody tr')].map(tr=>({
+    description:tr.querySelector('.pDesc').value,
+    qty:tr.querySelector('.pQty').value,
+    unit:tr.querySelector('.pUnit').value,
+    notes:tr.querySelector('.pNotes').value
+  })).filter(p=>p.description||p.qty||p.unit||p.notes);
+}
+function fillParts(arr=[]){
+  const tb=document.querySelector('#partsTable tbody'); tb.innerHTML='';
+  if(!arr.length) arr=[{description:'',qty:'',unit:'Pieza',notes:''}];
+  arr.forEach(addPart);
+}
+function addPart(p={}){
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input class="pDesc" value="${esc(p.description||'')}"></td><td><input class="pQty" value="${esc(p.qty||'')}"></td><td><input class="pUnit" value="${esc(p.unit||'Pieza')}"></td><td><input class="pNotes" value="${esc(p.notes||'')}"></td><td><button type="button" class="btn danger small removePart">Quitar</button></td>`;
+  document.querySelector('#partsTable tbody').appendChild(tr);
+}
+
+function sigData(id){ return $(id).toDataURL('image/png'); }
+function clearCanvas(id){ const c=$(id); c.getContext('2d').clearRect(0,0,c.width,c.height); }
+function drawSig(id,data){ clearCanvas(id); if(!data)return; const c=$(id),ctx=c.getContext('2d'),img=new Image(); img.onload=()=>{const r=c.getBoundingClientRect();ctx.drawImage(img,0,0,r.width,r.height)}; img.src=data; }
+
+function setupCanvas(id){
+  const c=$(id); const ctx=c.getContext('2d'); let drawing=false;
+  function resize(){ const r=c.getBoundingClientRect(), ratio=window.devicePixelRatio||1; const old=c.width?c.toDataURL('image/png'):''; c.width=Math.max(300,Math.round(r.width*ratio)); c.height=Math.max(160,Math.round(r.height*ratio)); ctx.setTransform(ratio,0,0,ratio,0,0); ctx.lineWidth=2.6; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.strokeStyle='#111827'; if(old&&old.length>100){const img=new Image();img.onload=()=>ctx.drawImage(img,0,0,r.width,r.height);img.src=old;} }
+  function point(e){ const x=e.touches?e.touches[0]:e; const r=c.getBoundingClientRect(); return {x:x.clientX-r.left,y:x.clientY-r.top}; }
+  function start(e){ e.preventDefault(); drawing=true; const p=point(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); }
+  function move(e){ if(!drawing)return; e.preventDefault(); const p=point(e); ctx.lineTo(p.x,p.y); ctx.stroke(); }
+  function stop(e){ if(!drawing)return; e.preventDefault(); drawing=false; }
+  setTimeout(resize,80); window.addEventListener('resize',resize);
+  c.addEventListener('mousedown',start); c.addEventListener('mousemove',move); window.addEventListener('mouseup',stop);
+  c.addEventListener('touchstart',start,{passive:false}); c.addEventListener('touchmove',move,{passive:false}); c.addEventListener('touchend',stop,{passive:false});
+  c.addEventListener('pointerdown',start); c.addEventListener('pointermove',move); c.addEventListener('pointerup',stop); c.addEventListener('pointercancel',stop);
+}
+
+function collect(includeMedia=true){
+  ensureFolio(false);
+  const d={}; ids.forEach(id=>d[id]=$(id).value||'');
+  d.id=currentId||uid(); d.parts=parts(); d.photos=includeMedia?photos:[]; d.logoData=logoData; d.techSignature=includeMedia?sigData('techSignature'):''; d.clientSignature=includeMedia?sigData('clientSignature'):''; d.updatedAt=new Date().toISOString();
+  return d;
+}
+function fill(d){
+  currentId=d.id||uid(); ids.forEach(id=>{if($(id))$(id).value=d[id]||''}); $('companyName').value=COMPANY; $('companyTagline').value=TAGLINE;
+  photos=Array.isArray(d.photos)?d.photos:[]; if(d.logoData){logoData=d.logoData;$('logoPreview').src=logoData}
+  fillParts(d.parts||[]); renderPhotos(); drawSig('techSignature',d.techSignature); drawSig('clientSignature',d.clientSignature); status();
+}
+function save(){
+  const d=collect(true); currentId=d.id; const arr=getReports(); const i=arr.findIndex(x=>x.id===d.id); if(i>=0)arr[i]=d; else arr.push(d); setReports(arr); setSettings(); renderList(); status(); toast('Reporte guardado');
+}
+function renderList(){
+  const list=$('reportList'), arr=getReports().sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
+  if(!arr.length){list.innerHTML='<div class="row"><span>No hay reportes guardados.</span></div>';return;}
+  list.innerHTML=arr.map(r=>`<div class="row" data-id="${r.id}"><strong>${esc(r.folio)} · ${esc(r.clientName||'Sin cliente')}</strong><span>${esc(r.reportDate||'')} · ${esc(r.brand||'')} ${esc(r.model||'')}</span></div>`).join('');
+}
+function newReport(){ currentId=null; ids.forEach(id=>{if(!id.startsWith('company'))$(id).value=''}); $('companyName').value=COMPANY; $('companyTagline').value=TAGLINE; $('reportDate').value=today(); $('score').value='100%'; ensureFolio(true); photos=[]; renderPhotos(); fillParts([]); clearCanvas('techSignature'); clearCanvas('clientSignature'); $('qrBox').style.display='none'; $('qrBox').innerHTML=''; status(); }
+function del(){ if(!currentId){toast('No hay reporte seleccionado');return;} if(!confirm('¿Eliminar reporte actual?'))return; setReports(getReports().filter(r=>r.id!==currentId)); renderList(); newReport(); }
+
+function renderPhotos(){
+  const g=$('photoGrid'); if(!photos.length){g.innerHTML=''; return;}
+  g.innerHTML=photos.map(p=>`<div class="photo"><img src="${p.dataUrl}"><label>Comentario</label><input data-photo="${p.id}" value="${esc(p.caption||'')}"><br><br><button type="button" class="btn danger small delPhoto" data-id="${p.id}">Eliminar</button></div>`).join('');
+}
+
+function shareData(){
+  const d=collect(false);
+  d.shareMode=true;
+  return btoa(unescape(encodeURIComponent(JSON.stringify(d))));
+}
+function currentBase(){
+  const custom=$('publicUrl').value.trim();
+  const here=location.href.split('#')[0];
+  return custom || here;
+}
+function generateQR(){
+  save();
+  const link = `${currentBase()}#reporte=${shareData()}`;
+  const box=$('qrBox'); box.innerHTML=''; box.style.display='flex';
+  if(typeof QRCode!=='undefined'){
+    new QRCode(box,{text:link,width:170,height:170,correctLevel:QRCode.CorrectLevel.M});
+  } else {
+    const img=document.createElement('img'); img.src=`https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=${encodeURIComponent(link)}`; box.appendChild(img);
+  }
+}
+
+function pdf(){
+  const d=collect(true); save();
+  const { jsPDF } = window.jspdf || {};
+  if(!jsPDF){ printFallback(d); return; }
+  const doc=new jsPDF('p','mm','a4');
+  const W=210,H=297,m=12; let y=12;
+  const primary=[18,52,77], soft=[232,246,248], text=[31,41,55], line=[215,225,235];
+  function addFooter(){ doc.setFontSize(8); doc.setTextColor(100); doc.text(`${d.companyPhone||''} · ${d.companyEmail||''}`,m,H-7); doc.text(d.folio||'',W-m,H-7,{align:'right'}); }
+  function page(){ addFooter(); doc.addPage(); y=12; }
+  function need(h){ if(y+h>H-14) page(); }
+  function title(t){ need(10); doc.setFillColor(...soft); doc.setDrawColor(...line); doc.roundedRect(m,y,W-2*m,8,2,2,'FD'); doc.setTextColor(...primary); doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.text(t,m+3,y+5.5); y+=11; }
+  function row(label,val,x,w){ doc.setFontSize(7.5); doc.setTextColor(100); doc.setFont('helvetica','bold'); doc.text(label,x,y); doc.setFontSize(9); doc.setTextColor(...text); doc.setFont('helvetica','normal'); const lines=doc.splitTextToSize(val||'-',w); doc.text(lines,x,y+4); return 8+lines.length*3.8; }
+  function rows(items){ for(let i=0;i<items.length;i+=2){ need(16); const yy=y; const h1=row(items[i][0],items[i][1],m,82); const h2=items[i+1]?row(items[i+1][0],items[i+1][1],m+94,82):0; y=yy+Math.max(h1,h2,13); doc.setDrawColor(235); doc.line(m,y-2,W-m,y-2); } }
+  function paragraph(t,b){ title(t); doc.setTextColor(...text); doc.setFont('helvetica','normal'); doc.setFontSize(9); const lines=doc.splitTextToSize(b||'-',W-2*m); for(const ln of lines){ need(5); doc.setTextColor(...text); doc.text(ln,m,y); y+=4.4;} y+=3; }
+  doc.setFillColor(...primary); doc.roundedRect(m,y,W-2*m,34,3,3,'F'); doc.setTextColor(255); doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.text('Reporte de Servicio Técnico',m+5,y+10); doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.text(COMPANY,m+5,y+17); doc.text(TAGLINE,m+5,y+23); doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.text(`Folio: ${d.folio}`,W-m-5,y+10,{align:'right'}); doc.setFont('helvetica','normal'); doc.text(`Fecha: ${d.reportDate}`,W-m-5,y+17,{align:'right'});
+  if(logoData){ try{doc.addImage(logoData,'JPEG',W-m-55,y+20,45,12,undefined,'FAST')}catch{try{doc.addImage(logoData,'PNG',W-m-55,y+20,45,12,undefined,'FAST')}catch{}}}
+  y+=40;
+  title('Resumen ejecutivo'); rows([['Cliente',d.clientName],['Equipo',`${d.brand||''} ${d.model||''}`.trim()],['Servicio',d.serviceType],['Estado final',d.finalStatus],['Inicio',d.startTime],['Término',d.endTime],['Próximo mantenimiento',d.nextMaintenance],['Puntuación / avance',d.score]]);
+  title('Datos del cliente'); rows([['Nombre del cliente',d.clientName],['Responsable sanitario',d.clientReceiver],['Domicilio',d.clientAddress],['Lugar del servicio',d.servicePlace],['Teléfono',d.clientPhone],['Correo',d.clientEmail],['Ubicación / área',d.clientLocation],['Preparado por',d.preparedBy]]);
+  title('Datos del equipo'); rows([['Instrumento / área',d.instrument],['Marca',d.brand],['Modelo',d.model],['Número de serie',d.serial],['Tipo de servicio',d.serviceType],['Prioridad',d.priority]]);
+  paragraph('Reporte de falla y/o motivo del servicio',d.problemReport);
+  paragraph('Descripción del servicio realizado',d.serviceDescription);
+  title('Refacciones y consumibles utilizados'); need(12); doc.setFillColor(...primary); doc.setTextColor(255); doc.setFont('helvetica','bold'); doc.setFontSize(8); const xs=[m,m+78,m+102,m+123], ws=[78,24,21,63]; ['Descripción','Cantidad','Unidad','Observaciones'].forEach((h,i)=>doc.text(h,xs[i]+2,y+5)); y+=8; doc.setFont('helvetica','normal'); doc.setTextColor(...text); const ps=d.parts.length?d.parts:[{description:'Sin refacciones registradas'}]; ps.forEach(p=>{const vals=[p.description||'-',p.qty||'-',p.unit||'-',p.notes||'-'];const split=vals.map((v,i)=>doc.splitTextToSize(v,ws[i]-4));const rh=Math.max(8,...split.map(s=>s.length*4+4));need(rh+2);doc.setDrawColor(...line);doc.rect(m,y,W-2*m,rh);split.forEach((s,i)=>doc.text(s,xs[i]+2,y+5));y+=rh;}); y+=4;
+  paragraph('Observaciones y recomendaciones',d.observations);
+  title('Evidencia fotográfica'); if(!d.photos.length){doc.setFontSize(9);doc.setTextColor(...text);doc.text('Sin evidencia fotográfica cargada.',m,y);y+=8}else{let x=m; const iw=82,ih=58,g=12; d.photos.forEach((p,i)=>{need(ih+16);try{doc.addImage(p.dataUrl,'JPEG',x,y,iw,ih,undefined,'FAST')}catch{} doc.setFontSize(7.5);doc.setTextColor(100);doc.text(doc.splitTextToSize(p.caption||p.name||`Evidencia ${i+1}`,iw).slice(0,2),x,y+ih+4); if(x+iw+g+iw>W-m){x=m;y+=ih+16}else{x+=iw+g}}); if(x!==m)y+=ih+16;}
+  title('Firmas de conformidad'); need(48); const sw=76,sh=28; doc.setDrawColor(...line); doc.roundedRect(m,y,sw,38,2,2,'S'); doc.roundedRect(W-m-sw,y,sw,38,2,2,'S'); try{doc.addImage(d.techSignature,'PNG',m+5,y+3,sw-10,sh,undefined,'FAST')}catch{} try{doc.addImage(d.clientSignature,'PNG',W-m-sw+5,y+3,sw-10,sh,undefined,'FAST')}catch{} doc.setFontSize(8);doc.setTextColor(...text);doc.setFont('helvetica','bold');doc.text(d.preparedBy||'Ingeniero de servicio',m+sw/2,y+34,{align:'center'});doc.text(d.clientReceiver||'Responsable sanitario',W-m-sw/2,y+34,{align:'center'});doc.setFont('helvetica','normal');doc.setTextColor(100);doc.text('Firma de ingeniero de servicio',m+sw/2,y+42,{align:'center'});doc.text('Firma de conformidad del responsable sanitario',W-m-sw/2,y+42,{align:'center'});
+  addFooter();
+  doc.save(`Reporte_${safe(d.folio)}_${safe(d.clientName||'cliente')}.pdf`);
+  toast('PDF generado');
+}
+function printFallback(d){ window.print(); }
+
+function excel(){
+  const arr=getReports(); if(!arr.length){toast('No hay reportes para exportar');return;}
+  const rows=arr.map(r=>({Folio:r.folio,Fecha:r.reportDate,Cliente:r.clientName,ResponsableSanitario:r.clientReceiver,Telefono:r.clientPhone,Correo:r.clientEmail,Instrumento:r.instrument,Marca:r.brand,Modelo:r.model,Serie:r.serial,TipoServicio:r.serviceType,EstadoFinal:r.finalStatus,Inicio:r.startTime,Termino:r.endTime,ProximoMantenimiento:r.nextMaintenance,PreparadoPor:r.preparedBy,ServicioRealizado:r.serviceDescription,Observaciones:r.observations}));
+  if(window.XLSX){const wb=XLSX.utils.book_new();const ws=XLSX.utils.json_to_sheet(rows);XLSX.utils.book_append_sheet(wb,ws,'Reportes');XLSX.writeFile(wb,`Base_Datos_Reportes_${today()}.xlsx`);return;}
+  const h=Object.keys(rows[0]);const csv=[h.join(','),...rows.map(r=>h.map(k=>`"${String(r[k]??'').replace(/"/g,'""')}"`).join(','))].join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));a.download=`Base_Datos_Reportes_${today()}.csv`;a.click();URL.revokeObjectURL(a.href);
+}
+
+function loadFromHash(){
+  const h=location.hash||''; if(!h.startsWith('#reporte='))return false;
+  try{ const raw=decodeURIComponent(escape(atob(h.replace('#reporte=','')))); const d=JSON.parse(raw); setTimeout(()=>fill(d),120); return true;}catch(e){return false;}
+}
+
+function bind(){
+  $('saveBtn').addEventListener('click',save);
+  $('pdfBtn').addEventListener('click',pdf);
+  $('excelBtn').addEventListener('click',excel);
+  $('newBtn').addEventListener('click',newReport);
+  $('deleteBtn').addEventListener('click',del);
+  $('generateQrBtn').addEventListener('click',generateQR);
+  $('addPartBtn').addEventListener('click',()=>addPart());
+  $('clearTech').addEventListener('click',()=>clearCanvas('techSignature'));
+  $('clearClient').addEventListener('click',()=>clearCanvas('clientSignature'));
+  document.querySelector('#partsTable').addEventListener('click',e=>{ if(e.target.classList.contains('removePart')) e.target.closest('tr').remove(); });
+  $('reportList').addEventListener('click',e=>{ const row=e.target.closest('.row'); if(!row||!row.dataset.id)return; const r=getReports().find(x=>x.id===row.dataset.id); if(r)fill(r); });
+  $('photoGrid').addEventListener('input',e=>{ if(e.target.dataset.photo){ const p=photos.find(x=>x.id===e.target.dataset.photo); if(p)p.caption=e.target.value; }});
+  $('photoGrid').addEventListener('click',e=>{ if(e.target.classList.contains('delPhoto')){photos=photos.filter(p=>p.id!==e.target.dataset.id);renderPhotos();}});
+  $('photoInput').addEventListener('change',async e=>{ for(const f of [...e.target.files]) photos.push({id:uid(),name:f.name,caption:'',dataUrl:await imageFileToData(f)}); e.target.value=''; renderPhotos(); });
+  $('companyLogo').addEventListener('change',async e=>{ const f=e.target.files[0]; if(!f)return; logoData=await imageFileToData(f,900,.9); $('logoPreview').src=logoData; setSettings(); });
+  ids.forEach(id=>$(id).addEventListener('input',()=>{status(); if(['companyPhone','companyEmail','companyAddress','publicUrl'].includes(id))setSettings();}));
+}
+
+async function init(){
+  bind();
+  setupCanvas('techSignature'); setupCanvas('clientSignature'); canvasesReady=true;
+  const s=getSettings(); $('companyPhone').value=s.companyPhone||''; $('companyEmail').value=s.companyEmail||''; $('companyAddress').value=s.companyAddress||''; $('publicUrl').value=s.publicUrl||''; logoData=s.logoData||await imageUrlToData('logo_soluciones_laboratorio.jpg'); if(logoData)$('logoPreview').src=logoData;
+  fillParts([]); renderPhotos(); renderList(); $('reportDate').value=today(); ensureFolio(true); status(); loadFromHash();
+}
+document.addEventListener('DOMContentLoaded',init);
+})();
+</script>
+</body>
+</html>
